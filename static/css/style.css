@@ -1,0 +1,395 @@
+/* ============================================================
+   Global reset & variables
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --surface-alt: #22263a;
+  --border: #2e3455;
+  --accent: #4f8ef7;
+  --accent-hover: #6aa0ff;
+  --accent-danger: #e05252;
+  --text: #e4e8f7;
+  --text-muted: #8891b4;
+  --green: #3ecf8e;
+  --yellow: #f5c842;
+  --radius: 12px;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
+  --font: "Segoe UI", system-ui, sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============================================================
+   Header
+   ============================================================ */
+header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 18px 32px;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.header-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ============================================================
+   Main layout
+   ============================================================ */
+main {
+  flex: 1;
+  display: flex;
+  gap: 24px;
+  padding: 28px 32px;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.left-panel  { flex: 0 0 380px; }
+.right-panel { flex: 1; }
+
+/* ============================================================
+   Card
+   ============================================================ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: var(--shadow);
+}
+
+.card h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 12px;
+  letter-spacing: 0.02em;
+}
+
+/* ============================================================
+   Speech controls
+   ============================================================ */
+.hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.mic-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.mic-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.1s;
+}
+
+.mic-btn:hover  { background: var(--accent-hover); }
+.mic-btn:active { transform: scale(0.97); }
+.mic-btn.active { background: var(--accent-danger); }
+
+.mic-icon { font-size: 1.1rem; }
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: background 0.25s;
+}
+
+.status-dot.listening {
+  background: var(--accent-danger);
+  box-shadow: 0 0 0 4px rgba(224, 82, 82, 0.25);
+  animation: pulse 1.2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(224, 82, 82, 0.25); }
+  50%       { box-shadow: 0 0 0 8px rgba(224, 82, 82, 0.0); }
+}
+
+.input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.input-row input {
+  flex: 1;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 9px 13px;
+  font-size: 0.88rem;
+  outline: none;
+  transition: border-color 0.18s;
+}
+
+.input-row input:focus { border-color: var(--accent); }
+
+.send-btn {
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 9px 16px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s;
+}
+
+.send-btn:hover {
+  background: var(--border);
+  border-color: var(--accent);
+}
+
+.transcript-box {
+  margin-top: 12px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  word-break: break-word;
+}
+
+/* ============================================================
+   Spatial context tags
+   ============================================================ */
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag {
+  background: var(--surface-alt);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   Command log
+   ============================================================ */
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.clear-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-muted);
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.clear-btn:hover {
+  border-color: var(--accent-danger);
+  color: var(--accent-danger);
+}
+
+.log-list {
+  list-style: none;
+  max-height: 220px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-right: 4px;
+}
+
+.log-list::-webkit-scrollbar { width: 4px; }
+.log-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.log-placeholder {
+  color: var(--text-muted);
+  font-size: 0.83rem;
+  font-style: italic;
+}
+
+.log-entry {
+  background: var(--surface-alt);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.83rem;
+}
+
+.log-entry .log-time {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  margin-bottom: 3px;
+}
+
+.log-entry .log-text {
+  color: var(--text);
+  word-break: break-word;
+}
+
+.log-entry .log-cmds {
+  color: var(--green);
+  font-size: 0.78rem;
+  margin-top: 3px;
+}
+
+/* ============================================================
+   Map card
+   ============================================================ */
+.map-card { height: 100%; display: flex; flex-direction: column; }
+
+.map-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.reset-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-muted);
+  padding: 6px 14px;
+  font-size: 0.83rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.reset-btn:hover {
+  background: var(--surface-alt);
+  border-color: var(--yellow);
+  color: var(--yellow);
+}
+
+.map-meta {
+  display: flex;
+  gap: 20px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+.map-meta span strong { color: var(--text); }
+
+#mapCanvas {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  margin: 0 auto;
+}
+
+.legend {
+  display: flex;
+  gap: 18px;
+  margin-top: 12px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.legend-item { display: flex; align-items: center; gap: 6px; }
+
+.legend-grid {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+}
+
+/* ============================================================
+   Footer
+   ============================================================ */
+footer {
+  text-align: center;
+  padding: 16px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 780px) {
+  main {
+    flex-direction: column;
+    padding: 20px 16px;
+  }
+  .left-panel { flex: none; width: 100%; }
+  .right-panel { flex: none; width: 100%; }
+}

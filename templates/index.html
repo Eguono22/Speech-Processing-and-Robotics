@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Speech‑Driven Robot Localization</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <span class="header-icon">🤖</span>
+      <div>
+        <h1>Speech‑Driven Robot Localization</h1>
+        <p class="subtitle">Simultaneous Mobile Robot Localization &amp; Spatial Context Recognition</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Left panel: controls + log -->
+    <section class="panel left-panel">
+      <div class="card">
+        <h2>Speech Input</h2>
+        <p class="hint">
+          Say or type spatial commands such as <em>forward</em>, <em>backward</em>,
+          <em>turn left</em>, <em>turn right</em>, <em>stop</em>, or <em>reset</em>.
+        </p>
+
+        <div class="mic-row">
+          <button id="micBtn" class="mic-btn" title="Hold to speak">
+            <span class="mic-icon">🎙️</span>
+            <span id="micLabel">Start Listening</span>
+          </button>
+          <span id="statusDot" class="status-dot"></span>
+        </div>
+
+        <div class="input-row">
+          <input
+            id="textInput"
+            type="text"
+            placeholder="Or type a command here…"
+            autocomplete="off"
+          />
+          <button id="sendBtn" class="send-btn">Send</button>
+        </div>
+
+        <div id="transcript" class="transcript-box" hidden>
+          <strong>Recognised:</strong> <span id="transcriptText"></span>
+        </div>
+      </div>
+
+      <!-- Recognised commands -->
+      <div class="card" id="contextCard" hidden>
+        <h2>Spatial Context</h2>
+        <div id="contextTags" class="tag-row"></div>
+      </div>
+
+      <!-- Command log -->
+      <div class="card">
+        <div class="log-header">
+          <h2>Command Log</h2>
+          <button id="clearLog" class="clear-btn">Clear</button>
+        </div>
+        <ul id="logList" class="log-list">
+          <li class="log-placeholder">No commands yet.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Right panel: robot map -->
+    <section class="panel right-panel">
+      <div class="card map-card">
+        <div class="map-header">
+          <h2>Robot Localization Map</h2>
+          <button id="resetBtn" class="reset-btn">Reset Robot</button>
+        </div>
+
+        <div class="map-meta">
+          <span id="posLabel">Position: (5, 5)</span>
+          <span id="dirLabel">Facing: ↑ North</span>
+        </div>
+
+        <canvas id="mapCanvas" width="400" height="400"></canvas>
+
+        <div class="legend">
+          <span class="legend-item"><span class="legend-robot">🤖</span> Robot</span>
+          <span class="legend-item"><span class="legend-grid"></span> Grid Cell</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Speech Processing &amp; Robotics — MIT Licensed</p>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
