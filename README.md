@@ -15,7 +15,7 @@ A Flask web application that lets you drive a simulated robot on a 2-D grid usin
 | 🗺️ Live grid map | Canvas-rendered 10 × 10 grid with robot position, direction arrow, and movement trail |
 | 🏷️ Spatial context | Highlights the recognised spatial commands (forward, backward, turn left/right, stop, reset) |
 | 📋 Command log | Timestamped history of every command sent |
-| 🔄 Per-session state | Each browser tab keeps its own robot state via Flask sessions |
+| 💾 Persistent state | Per-session robot state is stored in SQLite and survives server restarts |
 
 ---
 
@@ -54,7 +54,10 @@ source .venv/bin/activate   # Windows: .venv\Scripts\activate
 # 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Run the development server
+# 4. (Optional) set environment variables
+cp .env.example .env    # Windows PowerShell: Copy-Item .env.example .env
+
+# 5. Run the development server
 python app.py
 ```
 
@@ -64,11 +67,92 @@ Open your browser at **http://127.0.0.1:5000**.
 
 ---
 
+## Run Tests
+
+```bash
+pip install -r requirements-dev.txt
+pytest -q
+```
+
+CI runs the same test command on every push and pull request via
+`.github/workflows/ci.yml`.
+
+---
+
+## Docker
+
+```bash
+# Build image
+docker build -t speech-robot-localization .
+
+# Run container
+docker run --rm -p 5000:5000 speech-robot-localization
+```
+
+Open `http://127.0.0.1:5000`.
+
+---
+
+## API Reference
+
+### `GET /api/state`
+
+Returns current robot state for the session.
+
+### `POST /api/process`
+
+Request body:
+
+```json
+{
+  "text": "turn right then forward"
+}
+```
+
+Response includes `commands`, `robot_state`, and `direction_arrow`.
+
+### `POST /api/reset`
+
+Resets robot to default position and direction.
+
+### `GET /api/settings`
+
+Returns effective settings shown in the UI settings card.
+
+### `POST /api/settings`
+
+Request body:
+
+```json
+{
+  "state_db_path": "instance/robot_state.db",
+  "flask_debug": false
+}
+```
+
+Saves settings to `.env`. Restart the server to apply debug-mode changes.
+
+### `GET /api/docs`
+
+Returns machine-readable endpoint documentation as JSON.
+
+---
+
+## Persistence Notes
+
+- Robot state is persisted in SQLite at `instance/robot_state.db` by default.
+- Override the path with `STATE_DB_PATH` in `.env` if needed.
+- Set `SECRET_KEY` in `.env` for secure and stable session handling.
+
+---
+
 ## Project Structure
 
 ```
 Speech-Processing-and-Robotics/
 ├── app.py               # Flask application & spatial-context logic
+├── tests/
+│   └── test_app.py      # API and robot-state unit tests
 ├── requirements.txt     # Python dependencies
 ├── templates/
 │   └── index.html       # Main UI template

@@ -50,6 +50,25 @@
         </div>
       </div>
 
+      <div class="card">
+        <h2>Settings</h2>
+        <p class="hint">Update runtime settings and save them to <code>.env</code>.</p>
+        <div class="settings-grid">
+          <label for="dbPathInput">STATE_DB_PATH</label>
+          <input id="dbPathInput" type="text" placeholder="instance/robot_state.db" />
+
+          <label for="debugToggle">FLASK_DEBUG</label>
+          <select id="debugToggle">
+            <option value="0">Off</option>
+            <option value="1">On</option>
+          </select>
+        </div>
+        <div class="settings-actions">
+          <button id="saveSettingsBtn" class="send-btn">Save Settings</button>
+          <span id="settingsStatus" class="settings-status"></span>
+        </div>
+      </div>
+
       <!-- Recognised commands -->
       <div class="card" id="contextCard" hidden>
         <h2>Spatial Context</h2>

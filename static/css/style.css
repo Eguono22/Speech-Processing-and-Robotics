@@ -212,6 +212,46 @@ main {
   word-break: break-word;
 }
 
+.settings-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.settings-grid label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.settings-grid input,
+.settings-grid select {
+  width: 100%;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 9px 12px;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.settings-grid input:focus,
+.settings-grid select:focus {
+  border-color: var(--accent);
+}
+
+.settings-actions {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings-status {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
 /* ============================================================
    Spatial context tags
    ============================================================ */

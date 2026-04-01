@@ -154,6 +154,25 @@ async function fetchState() {
   return res.json();
 }
 
+async function fetchSettings() {
+  const res = await fetch("/api/settings");
+  if (!res.ok) throw new Error(`Server error ${res.status}`);
+  return res.json();
+}
+
+async function saveSettings(payload) {
+  const res = await fetch("/api/settings", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `Server error ${res.status}`);
+  }
+  return res.json();
+}
+
 // ---------------------------------------------------------------------------
 // Log
 // ---------------------------------------------------------------------------
@@ -210,6 +229,10 @@ function showContext(commands) {
 const textInput    = document.getElementById("textInput");
 const transcriptEl = document.getElementById("transcript");
 const transcriptTx = document.getElementById("transcriptText");
+const dbPathInput = document.getElementById("dbPathInput");
+const debugToggle = document.getElementById("debugToggle");
+const saveSettingsBtn = document.getElementById("saveSettingsBtn");
+const settingsStatus = document.getElementById("settingsStatus");
 
 async function handleSubmit(text) {
   if (!text.trim()) return;
@@ -333,15 +356,35 @@ function stopListening() {
   statusDot.classList.remove("listening");
 }
 
+saveSettingsBtn.addEventListener("click", async () => {
+  const payload = {
+    state_db_path: dbPathInput.value.trim(),
+    flask_debug: debugToggle.value === "1",
+  };
+  settingsStatus.textContent = "Saving...";
+  try {
+    const saved = await saveSettings(payload);
+    dbPathInput.value = saved.state_db_path || "";
+    debugToggle.value = saved.flask_debug ? "1" : "0";
+    settingsStatus.textContent = "Saved. Restart server to apply debug mode.";
+  } catch (err) {
+    settingsStatus.textContent = `Save failed: ${err.message}`;
+  }
+});
+
 // ---------------------------------------------------------------------------
 // Bootstrap: load current state
 // ---------------------------------------------------------------------------
 (async () => {
   try {
+    const settings = await fetchSettings();
+    dbPathInput.value = settings.state_db_path || "";
+    debugToggle.value = settings.flask_debug ? "1" : "0";
+
     const data = await fetchState();
     applyState(data);
   } catch (err) {
-    console.error("Failed to load initial robot state:", err.message);
+    console.error("Failed to load initial data:", err.message);
     // Render a default grid so the UI is not blank
     drawMap(robotState);
     updateMeta(robotState);
