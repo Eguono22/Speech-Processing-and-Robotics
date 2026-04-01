@@ -8,6 +8,12 @@ from app import app
 
 class RobotApiTests(unittest.TestCase):
     def setUp(self):
+        self._old_state_db_path = app.config.get("STATE_DB_PATH")
+        self._old_env_file_path = app.config.get("ENV_FILE_PATH")
+        self._old_secret_key = app.config.get("SECRET_KEY")
+        self._old_env_state_db = os.environ.get("STATE_DB_PATH")
+        self._old_env_flask_debug = os.environ.get("FLASK_DEBUG")
+
         self.db_path = os.path.join(
             tempfile.gettempdir(),
             f"robot_state_{uuid.uuid4().hex}.db",
@@ -23,6 +29,21 @@ class RobotApiTests(unittest.TestCase):
             ENV_FILE_PATH=self.env_path,
         )
         self.client = app.test_client()
+
+    def tearDown(self):
+        app.config["STATE_DB_PATH"] = self._old_state_db_path
+        app.config["ENV_FILE_PATH"] = self._old_env_file_path
+        app.config["SECRET_KEY"] = self._old_secret_key
+
+        if self._old_env_state_db is None:
+            os.environ.pop("STATE_DB_PATH", None)
+        else:
+            os.environ["STATE_DB_PATH"] = self._old_env_state_db
+
+        if self._old_env_flask_debug is None:
+            os.environ.pop("FLASK_DEBUG", None)
+        else:
+            os.environ["FLASK_DEBUG"] = self._old_env_flask_debug
 
     def test_state_endpoint_returns_defaults(self):
         response = self.client.get("/api/state")
