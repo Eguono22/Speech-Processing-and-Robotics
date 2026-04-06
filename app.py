@@ -80,6 +80,9 @@ def _get_db_path() -> str:
     configured = app.config.get("STATE_DB_PATH")
     if configured:
         return configured
+    # Vercel's function filesystem is read-only except /tmp.
+    if os.environ.get("VERCEL") == "1":
+        return "/tmp/robot_state.db"
     os.makedirs(app.instance_path, exist_ok=True)
     return os.path.join(app.instance_path, "robot_state.db")
 
