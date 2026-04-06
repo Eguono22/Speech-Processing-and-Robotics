@@ -48,6 +48,7 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
 app.config["STATE_DB_PATH"] = os.environ.get("STATE_DB_PATH")
 app.config["ENV_FILE_PATH"] = os.environ.get("ENV_FILE_PATH", ".env")
+app.config["HOSTED_READONLY_MODE"] = os.environ.get("VERCEL") == "1"
 
 GRID_SIZE = 10
 DEFAULT_X = 5
@@ -298,6 +299,14 @@ def get_settings():
 
 @app.route("/api/settings", methods=["POST"])
 def update_settings():
+    if app.config.get("HOSTED_READONLY_MODE"):
+        return jsonify(
+            {
+                "error": "Runtime settings updates are disabled in hosted mode. "
+                "Use deployment environment variables instead.",
+            }
+        ), 400
+
     data = request.get_json(silent=True) or {}
     state_db_path = str(data.get("state_db_path", "")).strip()
     flask_debug = bool(data.get("flask_debug", False))
@@ -371,5 +380,6 @@ def api_docs():
 
 if __name__ == "__main__":
     debug = os.environ.get("FLASK_DEBUG", "0") == "1"
+    port = int(os.environ.get("PORT", "5000"))
     print(f"[startup] Robot state DB: {_get_db_path()}")
-    app.run(debug=debug)
+    app.run(host="0.0.0.0", port=port, debug=debug)

@@ -93,6 +93,23 @@ Open `http://127.0.0.1:5000`.
 
 ---
 
+## Deploy As a Web App
+
+This project is a Flask web application and can be deployed on serverless
+platforms (for example Vercel) or traditional WSGI hosts.
+
+- Entry point for serverless: `api/index.py`
+- WSGI entry point: `wsgi.py` (`application`)
+- Cloud runtime port: set automatically via `PORT`
+
+### Notes for Hosted Environments
+
+- In hosted/serverless mode, runtime writes to `.env` are disabled.
+- Use platform environment variables (for example `SECRET_KEY`,
+  `STATE_DB_PATH`, `FLASK_DEBUG`) in your deployment settings instead.
+
+---
+
 ## API Reference
 
 ### `GET /api/state`
