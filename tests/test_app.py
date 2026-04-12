@@ -11,6 +11,7 @@ class RobotApiTests(unittest.TestCase):
         self._old_state_db_path = app.config.get("STATE_DB_PATH")
         self._old_env_file_path = app.config.get("ENV_FILE_PATH")
         self._old_secret_key = app.config.get("SECRET_KEY")
+        self._old_hosted_readonly_mode = app.config.get("HOSTED_READONLY_MODE")
         self._old_env_state_db = os.environ.get("STATE_DB_PATH")
         self._old_env_flask_debug = os.environ.get("FLASK_DEBUG")
 
@@ -34,6 +35,7 @@ class RobotApiTests(unittest.TestCase):
         app.config["STATE_DB_PATH"] = self._old_state_db_path
         app.config["ENV_FILE_PATH"] = self._old_env_file_path
         app.config["SECRET_KEY"] = self._old_secret_key
+        app.config["HOSTED_READONLY_MODE"] = self._old_hosted_readonly_mode
 
         if self._old_env_state_db is None:
             os.environ.pop("STATE_DB_PATH", None)
@@ -188,6 +190,20 @@ class RobotApiTests(unittest.TestCase):
 
         self.assertEqual(data["state_db_path"], "")
         self.assertTrue(data["effective_state_db_path"].endswith("robot_state.db"))
+
+    def test_settings_update_is_rejected_in_hosted_readonly_mode(self):
+        app.config["HOSTED_READONLY_MODE"] = True
+
+        response = self.client.post(
+            "/api/settings",
+            json={"state_db_path": "instance/hosted.db", "flask_debug": True},
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("disabled in hosted mode", response.get_json()["error"])
+
+        get_response = self.client.get("/api/settings")
+        self.assertEqual(get_response.status_code, 200)
+        self.assertTrue(get_response.get_json()["hosted_readonly_mode"])
 
     def test_api_docs_endpoint(self):
         response = self.client.get("/api/docs")

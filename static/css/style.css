@@ -240,6 +240,17 @@ main {
   word-break: break-word;
 }
 
+.settings-mode-hint {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  background: rgba(245, 200, 66, 0.12);
+  border: 1px solid rgba(245, 200, 66, 0.35);
+  border-radius: 8px;
+  color: var(--yellow);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
 .settings-grid label {
   font-size: 0.78rem;
   color: var(--text-muted);
@@ -260,6 +271,13 @@ main {
 .settings-grid input:focus,
 .settings-grid select:focus {
   border-color: var(--accent);
+}
+
+.settings-grid input:disabled,
+.settings-grid select:disabled,
+.send-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .settings-actions {

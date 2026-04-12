@@ -235,6 +235,31 @@ const saveSettingsBtn = document.getElementById("saveSettingsBtn");
 const settingsStatus = document.getElementById("settingsStatus");
 const effectiveDbPath = document.getElementById("effectiveDbPath");
 const runtimeMode = document.getElementById("runtimeMode");
+const settingsModeHint = document.getElementById("settingsModeHint");
+
+function applySettingsState(settings) {
+  const hostedReadonlyMode = Boolean(settings.hosted_readonly_mode);
+
+  dbPathInput.value = settings.state_db_path || "";
+  debugToggle.value = settings.flask_debug ? "1" : "0";
+  effectiveDbPath.textContent = settings.effective_state_db_path || "Unavailable";
+  runtimeMode.textContent = hostedReadonlyMode ? "Hosted read-only" : "Local writable";
+
+  dbPathInput.disabled = hostedReadonlyMode;
+  debugToggle.disabled = hostedReadonlyMode;
+  saveSettingsBtn.disabled = hostedReadonlyMode;
+
+  settingsModeHint.hidden = !hostedReadonlyMode;
+  settingsModeHint.textContent = hostedReadonlyMode
+    ? "Hosted deployments are read-only here. Update environment variables in your deployment settings instead."
+    : "";
+
+  if (hostedReadonlyMode) {
+    settingsStatus.textContent = "Settings are managed by deployment environment variables.";
+  } else if (settingsStatus.textContent === "Settings are managed by deployment environment variables.") {
+    settingsStatus.textContent = "";
+  }
+}
 
 async function handleSubmit(text) {
   if (!text.trim()) return;
@@ -359,6 +384,10 @@ function stopListening() {
 }
 
 saveSettingsBtn.addEventListener("click", async () => {
+  if (saveSettingsBtn.disabled) {
+    return;
+  }
+
   const payload = {
     state_db_path: dbPathInput.value.trim(),
     flask_debug: debugToggle.value === "1",
@@ -366,11 +395,10 @@ saveSettingsBtn.addEventListener("click", async () => {
   settingsStatus.textContent = "Saving...";
   try {
     const saved = await saveSettings(payload);
-    dbPathInput.value = saved.state_db_path || "";
-    debugToggle.value = saved.flask_debug ? "1" : "0";
-    effectiveDbPath.textContent = saved.effective_state_db_path || "Unavailable";
-    runtimeMode.textContent = saved.hosted_readonly_mode ? "Hosted read-only" : "Local writable";
-    settingsStatus.textContent = "Saved. Restart server to apply debug mode.";
+    applySettingsState(saved);
+    if (!saved.hosted_readonly_mode) {
+      settingsStatus.textContent = "Saved. Restart server to apply debug mode.";
+    }
   } catch (err) {
     settingsStatus.textContent = `Save failed: ${err.message}`;
   }
@@ -382,10 +410,7 @@ saveSettingsBtn.addEventListener("click", async () => {
 (async () => {
   try {
     const settings = await fetchSettings();
-    dbPathInput.value = settings.state_db_path || "";
-    debugToggle.value = settings.flask_debug ? "1" : "0";
-    effectiveDbPath.textContent = settings.effective_state_db_path || "Unavailable";
-    runtimeMode.textContent = settings.hosted_readonly_mode ? "Hosted read-only" : "Local writable";
+    applySettingsState(settings);
 
     const data = await fetchState();
     applyState(data);
