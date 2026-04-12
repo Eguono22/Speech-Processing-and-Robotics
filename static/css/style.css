@@ -218,6 +218,28 @@ main {
   gap: 8px;
 }
 
+.runtime-info {
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.runtime-info p + p {
+  margin-top: 6px;
+}
+
+.runtime-info strong {
+  color: var(--text);
+}
+
+.runtime-info span {
+  word-break: break-word;
+}
+
 .settings-grid label {
   font-size: 0.78rem;
   color: var(--text-muted);

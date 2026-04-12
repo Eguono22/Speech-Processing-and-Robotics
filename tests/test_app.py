@@ -163,7 +163,9 @@ class RobotApiTests(unittest.TestCase):
         self.assertEqual(get_response.status_code, 200)
         get_data = get_response.get_json()
         self.assertEqual(get_data["state_db_path"], self.db_path)
+        self.assertEqual(get_data["effective_state_db_path"], self.db_path)
         self.assertIn("flask_debug", get_data)
+        self.assertFalse(get_data["hosted_readonly_mode"])
 
         new_db = os.path.join(tempfile.gettempdir(), f"override_{uuid.uuid4().hex}.db")
         post_response = self.client.post(
@@ -173,8 +175,19 @@ class RobotApiTests(unittest.TestCase):
         self.assertEqual(post_response.status_code, 200)
         post_data = post_response.get_json()
         self.assertEqual(post_data["state_db_path"], new_db)
+        self.assertEqual(post_data["effective_state_db_path"], new_db)
         self.assertTrue(post_data["flask_debug"])
         self.assertTrue(post_data["restart_required"])
+
+    def test_settings_get_reports_effective_default_db_path(self):
+        app.config["STATE_DB_PATH"] = None
+
+        response = self.client.get("/api/settings")
+        self.assertEqual(response.status_code, 200)
+        data = response.get_json()
+
+        self.assertEqual(data["state_db_path"], "")
+        self.assertTrue(data["effective_state_db_path"].endswith("robot_state.db"))
 
     def test_api_docs_endpoint(self):
         response = self.client.get("/api/docs")
@@ -185,6 +198,18 @@ class RobotApiTests(unittest.TestCase):
         self.assertIn("/api/state", paths)
         self.assertIn("/api/process", paths)
         self.assertIn("/api/settings", paths)
+        settings_get = next(
+            endpoint
+            for endpoint in data["endpoints"]
+            if endpoint["path"] == "/api/settings" and endpoint["method"] == "GET"
+        )
+        settings_post = next(
+            endpoint
+            for endpoint in data["endpoints"]
+            if endpoint["path"] == "/api/settings" and endpoint["method"] == "POST"
+        )
+        self.assertIn("effective runtime settings", settings_get["description"])
+        self.assertIn("active DB path", settings_post["description"])
 
 
 if __name__ == "__main__":

@@ -53,6 +53,10 @@
       <div class="card">
         <h2>Settings</h2>
         <p class="hint">Update runtime settings and save them to <code>.env</code>.</p>
+        <div class="runtime-info">
+          <p><strong>Current DB:</strong> <span id="effectiveDbPath">Loading...</span></p>
+          <p><strong>Mode:</strong> <span id="runtimeMode">Loading...</span></p>
+        </div>
         <div class="settings-grid">
           <label for="dbPathInput">STATE_DB_PATH</label>
           <input id="dbPathInput" type="text" placeholder="instance/robot_state.db" />

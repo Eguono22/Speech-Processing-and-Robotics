@@ -233,6 +233,8 @@ const dbPathInput = document.getElementById("dbPathInput");
 const debugToggle = document.getElementById("debugToggle");
 const saveSettingsBtn = document.getElementById("saveSettingsBtn");
 const settingsStatus = document.getElementById("settingsStatus");
+const effectiveDbPath = document.getElementById("effectiveDbPath");
+const runtimeMode = document.getElementById("runtimeMode");
 
 async function handleSubmit(text) {
   if (!text.trim()) return;
@@ -366,6 +368,8 @@ saveSettingsBtn.addEventListener("click", async () => {
     const saved = await saveSettings(payload);
     dbPathInput.value = saved.state_db_path || "";
     debugToggle.value = saved.flask_debug ? "1" : "0";
+    effectiveDbPath.textContent = saved.effective_state_db_path || "Unavailable";
+    runtimeMode.textContent = saved.hosted_readonly_mode ? "Hosted read-only" : "Local writable";
     settingsStatus.textContent = "Saved. Restart server to apply debug mode.";
   } catch (err) {
     settingsStatus.textContent = `Save failed: ${err.message}`;
@@ -380,12 +384,16 @@ saveSettingsBtn.addEventListener("click", async () => {
     const settings = await fetchSettings();
     dbPathInput.value = settings.state_db_path || "";
     debugToggle.value = settings.flask_debug ? "1" : "0";
+    effectiveDbPath.textContent = settings.effective_state_db_path || "Unavailable";
+    runtimeMode.textContent = settings.hosted_readonly_mode ? "Hosted read-only" : "Local writable";
 
     const data = await fetchState();
     applyState(data);
   } catch (err) {
     console.error("Failed to load initial data:", err.message);
     // Render a default grid so the UI is not blank
+    effectiveDbPath.textContent = "Unavailable";
+    runtimeMode.textContent = "Unavailable";
     drawMap(robotState);
     updateMeta(robotState);
   }

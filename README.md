@@ -77,6 +77,23 @@ pytest -q
 CI runs the same test command on every push and pull request via
 `.github/workflows/ci.yml`.
 
+## Browser Verification
+
+Use `agent-browser` for a quick UI smoke test after starting the Flask app.
+Ports such as `5060` may be blocked by Chrome as unsafe, so prefer a port like
+`5087`.
+
+```bash
+agent-browser close --all
+agent-browser --session speech-robot-smoke batch --bail \
+  "open http://127.0.0.1:5087" \
+  "wait 1500" \
+  "get url" \
+  "get title" \
+  "get text body" \
+  "snapshot -i"
+```
+
 ---
 
 ## Docker
@@ -134,7 +151,9 @@ Resets robot to default position and direction.
 
 ### `GET /api/settings`
 
-Returns effective settings shown in the UI settings card.
+Returns the configured `state_db_path`, the active
+`effective_state_db_path`, and runtime mode flags shown in the UI settings
+card.
 
 ### `POST /api/settings`
 
@@ -148,6 +167,7 @@ Request body:
 ```
 
 Saves settings to `.env`. Restart the server to apply debug-mode changes.
+The response also includes the active `effective_state_db_path`.
 
 ### `GET /api/docs`
 

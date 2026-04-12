@@ -291,8 +291,10 @@ def get_settings():
     return jsonify(
         {
             "state_db_path": app.config.get("STATE_DB_PATH") or "",
+            "effective_state_db_path": _get_db_path(),
             "flask_debug": debug_enabled,
             "env_file_path": str(_get_env_path()),
+            "hosted_readonly_mode": app.config.get("HOSTED_READONLY_MODE", False),
         }
     )
 
@@ -332,8 +334,10 @@ def update_settings():
     return jsonify(
         {
             "state_db_path": app.config.get("STATE_DB_PATH") or "",
+            "effective_state_db_path": _get_db_path(),
             "flask_debug": flask_debug,
             "restart_required": True,
+            "hosted_readonly_mode": app.config.get("HOSTED_READONLY_MODE", False),
         }
     )
 
@@ -362,12 +366,12 @@ def api_docs():
                 {
                     "method": "GET",
                     "path": "/api/settings",
-                    "description": "Read effective runtime settings.",
+                    "description": "Read configured and effective runtime settings, including hosted mode flags.",
                 },
                 {
                     "method": "POST",
                     "path": "/api/settings",
-                    "description": "Save settings to .env for next restart.",
+                    "description": "Save runtime settings to .env for the next restart and return the active DB path.",
                     "json_body": {
                         "state_db_path": "instance/robot_state.db",
                         "flask_debug": False,
